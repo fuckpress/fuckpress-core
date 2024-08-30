@@ -1,0 +1,95 @@
+site_name:         FuckPress
+description:       A ultra minimalistic headless cms
+home_banner_image_url: https://github.com/podcastjs/podcastjs/assets/3322836/0d8bdbf1-78f0-4728-bcf4-6a6a25487dfe
+home_banner_title: Tell Your Story to the World!!
+home_banner_paragraph: |
+  Join with us! Login or Register. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Delectus, ex! 
+base_url:          https://fuckpress.github.io
+about_us_paragraph: A site to share our day-to-day about FuckPress
+phone: + 123 456 789
+
+products:
+  -
+    code:           p_100
+    name:				    sweet
+    image_url:			https://github.com/user-attachments/assets/c4fa9797-8e8e-40ba-91d9-29be9b09fbdd
+    currency:       $
+    price:          1
+
+  -
+    code:           p_101
+    name:				    cupcake
+    image_url:			https://github.com/user-attachments/assets/2d6f2ee8-5e39-4a6c-885e-5d9d5c7c4f9b
+    currency:       $
+    price:          2
+
+  -
+    code:           p_102
+    name:				    cake
+    image_url:			https://github.com/user-attachments/assets/c232dd41-185b-4138-9348-0898c8e44721
+    currency:       $
+    price:          12
+
+  -
+    code:           p_103
+    name:				    donut
+    image_url:			https://github.com/user-attachments/assets/8d9c4e6c-3f77-402c-bf47-d9c08ea7ef50
+    currency:       $
+    price:          2
+
+  -
+    code:           p_104
+    name:				    candy
+    image_url:			https://github.com/user-attachments/assets/439013d7-6573-4873-8a46-02cb7ef72824
+    currency:       $
+    price:          20
+
+  -
+    code:           p_105
+    name:				    chocolate cupcake
+    image_url:			https://github.com/user-attachments/assets/6fd4da1c-cffa-4b2c-bbbd-08f43a233e06
+    currency:       $
+    price:          8
+
+  -
+    code:           p_106
+    name:				    wedding cake
+    image_url:			https://github.com/user-attachments/assets/e1078b66-b085-4e8b-8e54-38bc738c1456
+    currency:       $
+    price:          15
+
+  -
+    code:           p_107
+    name:				    4 donuts
+    image_url:			https://github.com/user-attachments/assets/0e0aa862-037b-4b53-b553-4acf91276c82
+    currency:       $
+    price:          6
+
+  -
+    code:           p_108
+    name:				    dark chocolate
+    image_url:			https://github.com/user-attachments/assets/25a57d66-b61f-4f10-bf7e-b2d4062b71e5
+    currency:       $
+    price:          17
+
+  -
+    code:           p_109
+    name:				    4 cupcakes
+    image_url:			https://github.com/user-attachments/assets/1629bdde-596c-46be-94ea-2c62cd91cc50
+    currency:       $
+    price:          6
+
+  -
+    code:           p_110
+    name:				    pink cake
+    image_url:			https://github.com/user-attachments/assets/c267188a-ee91-4de3-9b5c-dc0ea9fac5b9
+    currency:       $
+    price:          9
+
+  -
+    code:           p_111
+    name:				    bear cake
+    image_url:			https://github.com/user-attachments/assets/7c61b879-6619-40f5-a463-4052a965e89e
+    currency:       $
+    price:          6
+
