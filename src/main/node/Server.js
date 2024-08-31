@@ -2,6 +2,8 @@ const path = require("path");
 const express = require('express');
 
 function Server(){
+
+  var serverInstance;
   
   this.start = async (port, absoluteSiteFolder) => {
     const app = express();    
@@ -13,13 +15,18 @@ function Server(){
     });
 
     return new Promise((resolve, reject) => {
-      server = app.listen(port, () => {
+      serverInstance = app.listen(port, () => {
         console.log('FuckPress is running on ' + port);
-        resolve(server);
+        resolve(serverInstance);
       });
     });
 
   }
+
+  this.shutdown = async (port, absoluteSiteFolder) => {
+    await serverInstance.close();
+  }
+
 }
 
 module.exports = Server;

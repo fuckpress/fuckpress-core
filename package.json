@@ -26,11 +26,11 @@
     "nyc": "^15.1.0"
   },
   "scripts": {
-    "dev": "nodemon --watch src --watch theme  --watch webpage -e js,md,html,css --watch ./config.yaml --ignore foo.json src/main/node/Index.js --start",
+    "dev": "nodemon --watch src --watch theme  --watch webpage -e js,md,html,css --watch ./fp-admin.yaml --ignore foo.json src/main/node/Index.js --start",
     "publish": "node src/main/node/Index.js --publish",
     "test": "nyc --reporter=html --reporter=json-summary mocha  'src/test/node/**/*.test.js' --exit --require mocha-suppress-logs && npm run badges",
     "test:verbose": "nyc --reporter=html --reporter=json-summary mocha  'src/test/node/**/*.test.js' --exit  --timeout 100000 && npm run badges",
-    "badges": "badges4cov --source=nyc_json --nyc_json_file_location=./coverage/coverage-summary.json --output_folder=.coverage"
+    "badges": "badges4cov --source=nyc_json --nyc_json_file_location=./coverage/coverage-summary.json --output_folder=coverage"
   },
   "devDependencies": {
     "uuid": "^9.0.1"

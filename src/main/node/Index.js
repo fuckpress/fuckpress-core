@@ -4,7 +4,7 @@ const fs = require('fs');
 const Publisher = require("./Publisher.js");
 const Builder = require("./Builder.js");
 const Server = require("./Server.js");
-const ExternalSite = require("./ExternalSite.js");
+const NewSite = require("./NewSite.js");
 const { Command } = require('commander');
 const finder = require('find-package-json');
 const chokidar = require('chokidar');
@@ -35,8 +35,8 @@ const program = new Command();
 
     if (typeof options.newSite !== 'undefined') {
         console.log("creating new site")
-        var externalSite = new ExternalSite();
-        await externalSite.start(options.newSite, process.cwd(), frameworkLocation);
+        var newSite = new NewSite();
+        await newSite.start(options.newSite, process.cwd(), frameworkLocation);
         return;
     } 
 
@@ -62,10 +62,10 @@ const program = new Command();
     if (frameworkLocation === projectBaseLocation) {
         siteFolderLocation = path.join(frameworkLocation, siteFolderName)
         webpageLocation = path.join(frameworkLocation, "webpage");
-        configDataSourceAbsoluteLocation = path.join(frameworkLocation, "config.yaml");
+        configDataSourceAbsoluteLocation = path.join(frameworkLocation, "fp-admin.yaml");
     }else{
         siteFolderLocation = path.join(projectBaseLocation, siteFolderName)
-        configDataSourceAbsoluteLocation = path.join(projectBaseLocation, "config.yaml");      
+        configDataSourceAbsoluteLocation = path.join(projectBaseLocation, "fp-admin.yaml");      
         try {
             await fs.promises.access(path.join(projectBaseLocation, "webpage"), fs.constants.F_OK)
             webpageLocation = path.join(projectBaseLocation, "webpage");

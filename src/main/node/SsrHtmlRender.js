@@ -1,31 +1,10 @@
-const util = require("util");
 const fs = require("fs");
-const fsExtra = require("fs-extra");
 const path = require("path");
-const markdownit = require('markdown-it');
 const Handlebars = require('handlebars');
-const md = markdownit({ breaks: true,html: true })
 
 function SsrHtmlRender() {
 
-  this.start = async (configDataSource, siteFolder, webpageLocation) => {
-
-    Handlebars.registerHelper('if_strint_eq', function(arg1, arg2, options) {
-        return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
-    });
-
-    Handlebars.registerHelper('toDateString', function(arg1, options) {
-      try {
-          var parts = arg1.split("-");
-          var date = new Date(parts[0], parts[1]-1, parts[2]);
-          return date.toDateString().replace(/^\S+\s/,'')
-      } catch (error) {
-          console.log("Failed to evaluate helper: toDateString")
-          console.log(error)
-          return arg1;
-      }
-    });       
-
+  this.start = async (configDataSource, siteFolder, webpageLocation) => {   
     await renderPages(configDataSource, siteFolder, webpageLocation);
   }
 

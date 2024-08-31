@@ -1,10 +1,10 @@
 # FuckPress
 
 <p float="left">
-  <img src="./.coverage/branches.svg">
-  <img src="./.coverage/functions.svg">
-  <img src="./.coverage/lines.svg">
-  <img src="./.coverage/statements.svg">
+  <img src="./coverage/branches.svg">
+  <img src="./coverage/functions.svg">
+  <img src="./coverage/lines.svg">
+  <img src="./coverage/statements.svg">
 </p>
 
 <p align="center">
@@ -25,6 +25,10 @@ Made with love <3
 - https://fuckpress.github.io/fuckpress-demo/
   - Hosted with github page
   - source: https://github.com/fuckpress/fuckpress-demo
+
+## Tutorial
+
+- https://youtu.be/Yvybagh2zcs
 
 ## Install
 
@@ -71,7 +75,7 @@ fuckpress --publish --output=docs
 
 ## How to customize?
 
-Just add a new field in **config.yaml**:
+Just add a new field in **fp-admin.yaml**:
 
 ```
 foo : bar
@@ -87,7 +91,7 @@ Finally, refresh the url
 
 ## Your own theme
 
-Just download any theme from internet with the classic index.html and set the fields from the **config.yaml** using [handlebars](https://handlebarsjs.com/contributing/interactive-examples.html) syntax
+Just download any theme from internet with the classic index.html and set the fields from the **fp-admin.yaml** using [handlebars](https://handlebarsjs.com/contributing/interactive-examples.html) syntax
 
 ```
 <title>{{site_name}}</title>
