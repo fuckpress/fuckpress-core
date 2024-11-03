@@ -27,7 +27,7 @@ describe('SsrHtmlRender', function () {
     await fs.promises.mkdir(siteFolder);
 
     //start renderdization
-    var webpageLocation = path.join(appDir, "webpage");
+    var webpageLocation = path.join(appDir, "theme");
     var ssrHtmlRender = new SsrHtmlRender();
     await ssrHtmlRender.start(yamlObject, siteFolder, webpageLocation);
     

@@ -11,19 +11,19 @@ const util = require("util");
 const fsExtra = require("fs-extra");
 const copyPromise = util.promisify(fsExtra.copy);
 
-describe('Publisher', function () {
+describe('EntryPoint', function () {
 
   it('should work the minimal yaml and with default theme', async function () {
 
     //this value is hardcoded in src/test/node/EntryPoint/minimal-and-default/fp-admin.yaml
     var siteName = 'ed9fe511-665c-48e9-ae2e-dec37ed18693';
 
-    //replicating the fp-admin.yaml
+    //creating the main folder
     var folder = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'fuckpress-'));
     console.log(folder);
 
-    //replicating the site folder
-    await copyPromise(path.join(__dirname, "minimal-and-default","fp-admin.yaml"), path.join(folder, "fp-admin.yaml"))
+    //adding the yaml
+    await copyPromise(path.join(__dirname,"fp-admin.yaml"), path.join(folder, "fp-admin.yaml"))
 
     var entrypoint = new Entrypoint();
     //output is by default = site

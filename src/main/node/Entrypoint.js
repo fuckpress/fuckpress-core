@@ -48,17 +48,17 @@ function Entrypoint (){
         //calling is from inside of framework
         if (frameworkLocation === projectBaseLocation) {
             siteFolderLocation = path.join(frameworkLocation, siteFolderName)
-            webpageLocation = path.join(frameworkLocation, "webpage");
+            webpageLocation = path.join(frameworkLocation, "theme");
             configDataSourceAbsoluteLocation = path.join(frameworkLocation, "fp-admin.yaml");
-        }else{
+        }else{ //calling is from any folder in the os
             siteFolderLocation = path.join(projectBaseLocation, siteFolderName)
             configDataSourceAbsoluteLocation = path.join(projectBaseLocation, "fp-admin.yaml");      
             try {
-                await fs.promises.access(path.join(projectBaseLocation, "webpage"), fs.constants.F_OK)
-                webpageLocation = path.join(projectBaseLocation, "webpage");
+                await fs.promises.access(path.join(projectBaseLocation, "theme"), fs.constants.F_OK)
+                webpageLocation = path.join(projectBaseLocation, "theme");
             } catch (e) {
                 //external theme folder was not found. Default will be used
-                webpageLocation = path.join(__dirname, "..", "..", "..", "webpage");
+                webpageLocation = path.join(__dirname, "..", "..", "..", "theme");
             }
         }
 
@@ -115,6 +115,15 @@ function Entrypoint (){
         }
 
     };
+
+    async function folderExist(folderToValidate){
+        try {
+            await fs.promises.access(folderToValidate, fs.constants.F_OK)      
+            return true;
+        } catch (e) {
+            return false;
+        }        
+    }
 
     this.getServer = () => {
       return this.server;

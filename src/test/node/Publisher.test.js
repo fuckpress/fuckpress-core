@@ -22,7 +22,7 @@ describe('Publisher', function () {
     var siteFolder = path.join(folder, "site");
     await fs.promises.mkdir(siteFolder);
 
-    var webpageLocation = path.join(appDir, "webpage");
+    var webpageLocation = path.join(appDir, "theme");
     
     //start publish
     var publisher = new Publisher();
