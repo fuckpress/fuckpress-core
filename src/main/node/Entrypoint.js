@@ -1,12 +1,20 @@
+
+var log4js = require("log4js");
+var logger = log4js.getLogger();
 const path = require('path');
 const fs = require('fs');
 const Publisher = require("./Publisher.js");
 const Builder = require("./Builder.js");
 const Server = require("./Server.js");
 const NewSite = require("./NewSite.js");
+const Common = require("./Common.js");
 const finder = require('find-package-json');
 const chokidar = require('chokidar');
 const yaml = require('js-yaml');
+const { Exception } = require('handlebars');
+const util = require("util");
+const fsExtra = require("fs-extra");
+const copyPromise = util.promisify(fsExtra.copy);
 
 function Entrypoint (){
 
@@ -14,14 +22,14 @@ function Entrypoint (){
 
     this.start = async (options, projectBaseLocationToOverride) => {
 
-        console.log("entrypoint arguments", options)
+        console.log("Entrypoint arguments", options)
 
         var f = finder(__filename);
         var frameworkLocation = path.dirname(f.next().filename);
-        console.log("FrameworkLocation", frameworkLocation)
+        console.debug("FrameworkLocation", frameworkLocation);
 
         if (typeof options.newSite !== 'undefined') {
-            console.log("creating new site")
+            console.log("Creating new site")
             var newSite = new NewSite();
             await newSite.start(options.newSite, process.cwd(), frameworkLocation);
             return;
@@ -42,27 +50,27 @@ function Entrypoint (){
         var siteFolderName = options.output;
 
         var siteFolderLocation;
-        var webpageLocation;
+        var themeLocation;
         var configDataSourceAbsoluteLocation;
 
         //calling is from inside of framework
         if (frameworkLocation === projectBaseLocation) {
             siteFolderLocation = path.join(frameworkLocation, siteFolderName)
-            webpageLocation = path.join(frameworkLocation, "theme");
+            themeLocation = path.join(frameworkLocation, "theme");
             configDataSourceAbsoluteLocation = path.join(frameworkLocation, "fp-admin.yaml");
         }else{ //calling is from any folder in the os
             siteFolderLocation = path.join(projectBaseLocation, siteFolderName)
             configDataSourceAbsoluteLocation = path.join(projectBaseLocation, "fp-admin.yaml");      
             try {
                 await fs.promises.access(path.join(projectBaseLocation, "theme"), fs.constants.F_OK)
-                webpageLocation = path.join(projectBaseLocation, "theme");
+                themeLocation = path.join(projectBaseLocation, "theme");
             } catch (e) {
                 //external theme folder was not found. Default will be used
-                webpageLocation = path.join(__dirname, "..", "..", "..", "theme");
+                themeLocation = path.join(__dirname, "..", "..", "..", "theme");
             }
         }
 
-        console.log("configDataSourceAbsoluteLocation", configDataSourceAbsoluteLocation);
+        console.log("Config", configDataSourceAbsoluteLocation);
         var port = process.env.PORT || 2708;    
 
         try {
@@ -75,7 +83,7 @@ function Entrypoint (){
         if(siteFolderExists===true){
             try {
             await fs.promises.rm(siteFolderLocation, { recursive: true });  
-            console.log("Success purge: "+siteFolderLocation)
+            console.debug("Success purge: "+siteFolderLocation)
             } catch (e) {
             console.log("Failed to clear the site folder: "+siteFolderLocation);
             console.error(e);
@@ -83,46 +91,80 @@ function Entrypoint (){
             } 
         }
         await fs.promises.mkdir(siteFolderLocation)
-        
-        console.log("Folders", { projectBaseLocation, siteFolderLocation, webpageLocation })
 
-        //move from webpage to site
-        var publisher = new Publisher();
-        await publisher.start(webpageLocation, siteFolderLocation); 
-        console.log("Initial publish completed")
-
-        var builder = new Builder();
         var rawConfigDataSource = await fs.promises.readFile(configDataSourceAbsoluteLocation,"utf8");
         let configDataSource = yaml.load(rawConfigDataSource);  
-        await builder.start(configDataSource, siteFolderLocation, webpageLocation);
+        //validation if minimal i18n configuration exist
+        var hasI18nConfig = Common.hasTheMinimalI18nConfiguration(configDataSource);
+        console.debug(`hasI18nConfig: ${hasI18nConfig}`);
         
-        if(options.start===true){
-            this.server = new Server();
-            await this.server.start(port, siteFolderLocation);
+        console.log("Folders", JSON.stringify({ projectBaseLocation, siteFolderLocation, themeLocation }))
 
-            chokidar
-                .watch(projectBaseLocation, { ignoreInitial: true })
-                .on('all', async (event, filename) => {
-                    if (filename && filename.startsWith(siteFolderLocation)) return;
+        //TODO: move to another module
+        if(hasI18nConfig===false){
+            //move from webpage to site
+            var publisher = new Publisher();
+            await publisher.start(themeLocation, siteFolderLocation); 
+            console.log("Move initial files to publish folder is completed")
 
-                    console.log("Detected change: " + filename)
-                    console.log("\nRebuilding")
-                    var rawConfigDataSource = await fs.promises.readFile(configDataSourceAbsoluteLocation,"utf8");
-                    let configDataSource = yaml.load(rawConfigDataSource);                  
-                    await publisher.start(webpageLocation, siteFolderLocation);
-                    await builder.start(configDataSource, siteFolderLocation, webpageLocation);
-                })    
+            var builder = new Builder();        
+            await builder.renderSsrMonoLanguage(configDataSource, siteFolderLocation, themeLocation);
+            
+            if(options.start===true){
+                this.server = new Server();
+                await this.server.start(port, siteFolderLocation);
+
+                chokidar
+                    .watch(projectBaseLocation, { ignoreInitial: true })
+                    .on('all', async (event, filename) => {
+                        if (filename && filename.startsWith(siteFolderLocation)) return;
+
+                        console.log("Detected change: " + filename)
+                        console.log("\nRebuilding")
+                        var rawConfigDataSource = await fs.promises.readFile(configDataSourceAbsoluteLocation,"utf8");
+                        let configDataSource = yaml.load(rawConfigDataSource);                  
+                        await publisher.start(themeLocation, siteFolderLocation);
+                        await builder.renderSsrMonoLanguage(configDataSource, siteFolderLocation, themeLocation);
+                    })    
+            }
+        }else{
+            //thanks to earlier validation, here we have a ssr strategy with more than 1 languages
+            var entrypointMode = configDataSource.i18n.entrypoint_mode || "default_language";
+            //remove this when more entrypoint modes are add
+            if(entrypointMode!="default_language"){
+                throw new Error(`Not supported i18n.entrypoint_mode: ${i18n.entrypoint_mode}`);
+            }
+
+            var publisher = new Publisher();
+            //index.html for default language
+            //default language will be the first
+            await publisher.start(themeLocation, siteFolderLocation); 
+
+            var filenames = await fs.promises.readdir(siteFolderLocation);
+            var initialHtmlFileNames = [];
+            for(var filename of filenames){
+                if (filename.endsWith(".html")) initialHtmlFileNames.push(filename);
+            }
+
+            var languages = configDataSource.i18n.languages;
+            // more languages: en.html, fr.html, etc
+            for(var i=1; i<languages.length; i++){
+                for(var initialHtmlFileName of initialHtmlFileNames){
+                  var name = path.parse(initialHtmlFileName).name;
+                  console.log(`Creating: ${name}-${languages[i]}.html`);                  
+                  await copyPromise(path.join(siteFolderLocation, initialHtmlFileName), path.join(siteFolderLocation, `${name}-${languages[i]}.html`))    
+                }    
+            }
+
+            var builder = new Builder();        
+            await builder.renderSsrMultiLanguage(configDataSource, siteFolderLocation, themeLocation, initialHtmlFileNames);
+
         }
 
     };
 
     async function folderExist(folderToValidate){
-        try {
-            await fs.promises.access(folderToValidate, fs.constants.F_OK)      
-            return true;
-        } catch (e) {
-            return false;
-        }        
+     
     }
 
     this.getServer = () => {

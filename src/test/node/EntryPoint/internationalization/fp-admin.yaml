@@ -1,0 +1,23 @@
+i18n:
+  strategy: ssr # csr
+  languages: 
+    - es
+    - en
+    - fr
+  entrypoint_mode: default_language # all_languages, js_redirect, js_select
+
+## multi language fields
+
+es:
+  site_name: Corporacion Tierra
+  description: Division de investigacion de O4aCorp
+en:
+  site_name: Land Corporation
+  description: Research divison of O4aCorp
+fr:
+  site_name: Société de la Terre
+  description: Division de recherche d'O4aCorp
+
+## non language affected fields
+
+phone: + 123 456 789

@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+const LoggerFactory = require("./LoggerFactory");
+LoggerFactory.init();
+
 const { Command } = require('commander');
 const Entrypoint = require("./Entrypoint.js");
 
