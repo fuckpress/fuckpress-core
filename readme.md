@@ -11,9 +11,24 @@
   <img src="https://github.com/user-attachments/assets/1aa03ce3-94ea-49c5-9860-89d0d33fda26" width=150>  
 </p>
 
-Yes, another lightweight, headless and simple static page generator but on steroids. 
+ 	Yes, another lightweight, headless and simple static page generator but on html and yaml steroids. 
 
 Made with love <3
+
+## Why?
+
+- Not all the webs needs Wordpress
+- Not all the webs needs a database
+- Why a CMS if the final users raise Jira ticket to change the home image, change the company address, etc
+- You don't want to convert your cool html design to a wordpress theme (php)
+
+## Steps
+
+- Buy or download any html theme or template
+- Install fuckpress
+- Run fuckpress
+- Build the static site
+- Deploy it wherever you want: aws s3, github pages, apache, nginx, tomcat, iis, tiiny.host, namecheap, godaddy, render.com, Cloudflare Pages, Netlify, Vercel
 
 ## Requirements
 
@@ -57,9 +72,11 @@ Go to http://localhost:2708 and you will see the demo
  <img src="https://github.com/user-attachments/assets/2ecc6d95-efd3-49f8-a3d6-9b88d3482411" width=500>
 </p>
 
+> This is just for dev, not for prod usage
+
 ## Publish
 
-After the creation of your markdowns and settings, if you need a static site to be hosted in some server, follow these steps
+If you are ready to publish your awesome site, follow these steps
 
 Generate the static site
 
@@ -72,6 +89,8 @@ By default, it creates a **site** folder. If you need a custom folder:
 ```
 fuckpress --publish --output=docs
 ```
+
+The result folder will contain your static site ready to be deployed wherever you want.
 
 ## How to customize?
 
@@ -87,7 +106,7 @@ And put this field wherever you want in your html using [handlebars](https://han
 <h1>{{foo}}</h1>
 ```
 
-Finally, refresh the url 
+Refresh the url or restart fuckpress
 
 ## Your own theme
 
@@ -96,6 +115,12 @@ Just download any theme from internet with the classic index.html and set the fi
 ```
 <title>{{site_name}}</title>
 ```
+
+Refresh the url or restart fuckpress
+
+## Features
+
+For more features or complex usage check the [wiki](https://github.com/fuckpress/fuckpress-core/wiki) or the [github page](https://fuckpress.github.io)
 
 ## For nodejs developers (contributors)
 
@@ -111,6 +136,7 @@ npm run dev
 - https://www.brandcrowd.com/maker/logos
 - https://github.com/lemidia/shopping-website-javascript
 - https://github.com/creativetimofficial/awesome-landing-page
+- https://codepen.io/shePen/pen/rNVyLPo
 
 
 ## Roadmap

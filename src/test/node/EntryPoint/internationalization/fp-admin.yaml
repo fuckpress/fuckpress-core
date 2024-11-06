@@ -4,7 +4,7 @@ i18n:
     - es
     - en
     - fr
-  entrypoint_mode: default_language # all_languages, js_redirect, js_select
+  render_mode: default_language # all_languages, js_redirect, js_select
 
 ## multi language fields
 

@@ -57,7 +57,7 @@ function Entrypoint (){
         if (frameworkLocation === projectBaseLocation) {
             siteFolderLocation = path.join(frameworkLocation, siteFolderName)
             themeLocation = path.join(frameworkLocation, "theme");
-            configDataSourceAbsoluteLocation = path.join(frameworkLocation, "fp-admin.yaml");
+            configDataSourceAbsoluteLocation = path.join(frameworkLocation, "src","main","resources","archetype","fp-admin.yaml");
         }else{ //calling is from any folder in the os
             siteFolderLocation = path.join(projectBaseLocation, siteFolderName)
             configDataSourceAbsoluteLocation = path.join(projectBaseLocation, "fp-admin.yaml");      
@@ -100,7 +100,7 @@ function Entrypoint (){
         
         console.log("Folders", JSON.stringify({ projectBaseLocation, siteFolderLocation, themeLocation }))
 
-        //TODO: move to another module
+        //TODO: move to another module or plugin
         if(hasI18nConfig===false){
             //move from webpage to site
             var publisher = new Publisher();
@@ -129,11 +129,13 @@ function Entrypoint (){
             }
         }else{
             //thanks to earlier validation, here we have a ssr strategy with more than 1 languages
-            var entrypointMode = configDataSource.i18n.entrypoint_mode || "default_language";
-            //remove this when more entrypoint modes are add
-            if(entrypointMode!="default_language"){
-                throw new Error(`Not supported i18n.entrypoint_mode: ${i18n.entrypoint_mode}`);
+            var renderMode = configDataSource.i18n.render_mode || "default_language";
+            //remove this when more show modes are add
+            if(renderMode!="default_language"){
+                throw new Error(`Not supported i18n.render_mode: ${i18n.render_mode}`);
             }
+
+            var showFloatingLanguageSelector = configDataSource.i18n.show_selector || true;
 
             var publisher = new Publisher();
             //index.html for default language
@@ -157,7 +159,7 @@ function Entrypoint (){
             }
 
             var builder = new Builder();        
-            await builder.renderSsrMultiLanguage(configDataSource, siteFolderLocation, themeLocation, initialHtmlFileNames);
+            await builder.renderSsrMultiLanguage(frameworkLocation, configDataSource, siteFolderLocation, themeLocation, initialHtmlFileNames, showFloatingLanguageSelector);
 
         }
 
