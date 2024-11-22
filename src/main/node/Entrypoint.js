@@ -160,6 +160,51 @@ function Entrypoint (){
 
             var builder = new Builder();        
             await builder.renderSsrMultiLanguage(frameworkLocation, configDataSource, siteFolderLocation, themeLocation, initialHtmlFileNames, showFloatingLanguageSelector);
+            this.server = new Server();
+            await this.server.start(port, siteFolderLocation);         
+
+            chokidar
+            .watch(projectBaseLocation, { ignoreInitial: true })
+            .on('all', async (event, filename) => {
+                if (filename && filename.startsWith(siteFolderLocation)) return;
+
+                console.log("Detected change: " + filename)
+                console.log("\nRebuilding")
+                var rawConfigDataSource = await fs.promises.readFile(configDataSourceAbsoluteLocation,"utf8");
+                let configDataSource = yaml.load(rawConfigDataSource);                  
+                await publisher.start(themeLocation, siteFolderLocation);
+                await builder.renderSsrMonoLanguage(configDataSource, siteFolderLocation, themeLocation);
+
+
+                //--
+                renderMode = configDataSource.i18n.render_mode || "default_language";
+                //remove this when more show modes are add
+                if(renderMode!="default_language"){
+                    throw new Error(`Not supported i18n.render_mode: ${i18n.render_mode}`);
+                }
+    
+                showFloatingLanguageSelector = configDataSource.i18n.show_selector || true;
+    
+                await publisher.start(themeLocation, siteFolderLocation); 
+    
+                filenames = await fs.promises.readdir(siteFolderLocation);
+                let initialHtmlFileNames = [];
+                for(let filename of filenames){
+                    if (filename.endsWith(".html")) initialHtmlFileNames.push(filename);
+                }
+    
+                languages = configDataSource.i18n.languages;
+                // more languages: en.html, fr.html, etc
+                for(let i=1; i<languages.length; i++){
+                    for(let initialHtmlFileName of initialHtmlFileNames){
+                      var name = path.parse(initialHtmlFileName).name;
+                      console.log(`Creating: ${name}-${languages[i]}.html`);                  
+                      await copyPromise(path.join(siteFolderLocation, initialHtmlFileName), path.join(siteFolderLocation, `${name}-${languages[i]}.html`))    
+                    }    
+                }
+    
+                await builder.renderSsrMultiLanguage(frameworkLocation, configDataSource, siteFolderLocation, themeLocation, initialHtmlFileNames, showFloatingLanguageSelector);
+            })    
 
         }
 

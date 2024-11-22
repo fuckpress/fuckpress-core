@@ -108,7 +108,7 @@ describe('EntryPoint', function () {
     // expect(indexHtmlContent).to.contains(siteName);
     // expect(indexHtmlContent).to.contains(description);
     // console.log("entrypoint.getServer()", entrypoint.getServer())
-    // await entrypoint.getServer().shutdown();
+    await entrypoint.getServer().shutdown();
   });
 
 });

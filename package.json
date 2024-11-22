@@ -24,7 +24,8 @@
     "mocha": "^10.2.0",
     "mocha-suppress-logs": "^0.4.1",
     "nodemon": "^3.0.2",
-    "nyc": "^15.1.0"
+    "nyc": "^15.1.0",
+    "rimraf": "^6.0.1"
   },
   "scripts": {
     "dev": "nodemon --watch src --watch theme  --watch webpage -e js,md,html,css --watch ./fp-admin.yaml --ignore foo.json src/main/node/Index.js --start",

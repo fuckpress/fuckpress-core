@@ -1,35 +1,43 @@
 <style>
     #lang {
-    font-family: 'Open Sans', Arial, Helvetica, Verdana, sans-serif;
-    background: #333;
-    position: fixed;
-    right: 0;
-    top: 50px;
-    padding: 1em;
+        font-family: 'Open Sans', Arial, Helvetica, Verdana, sans-serif;
+        background: #333;
+        position: fixed;
+        right: 0;
+        top: 100px;
+        /*top: 50% in some templates dissapear*/
+        padding: 1em;
+        z-index: 999;
+        opacity: 0.5;
     }
-  
+
     #lang a {
-      text-decoration: none;
-      color: rgba(255,255,255,.7)!important;
+        text-decoration: none;
+        color: rgba(255, 255, 255, .7) !important;
     }
-  
-    #lang ul {margin: 0; padding: 0;}
-  
+
+    #lang ul {
+        margin: 0;
+        padding: 0;
+    }
+
     #lang ul li {
-    list-style-type: none;
-    font-size: 14px;
-    text-align: center;
+        list-style-type: none;
+        font-size: 14px;
+        text-align: center;
     }
-  
-    #lang ul li a i {font-size: 24px;}    
+
+    #lang ul li a i {
+        font-size: 24px;
+    }
 </style>
 
 <div id="lang">
-	<ul>
-		{{#each languages}}
-            <li>
-                <a href="{{url}}">{{short_name}}</a>
-            </li>
-        {{/each}}        
-	</ul>
+    <ul>
+        {{#each languages}}
+        <li>
+            <a href="{{url}}">{{short_name}}</a>
+        </li>
+        {{/each}}
+    </ul>
 </div>
