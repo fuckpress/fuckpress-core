@@ -1,6 +1,3 @@
-
-var log4js = require("log4js");
-var logger = log4js.getLogger();
 const path = require('path');
 const fs = require('fs');
 const Publisher = require("./Publisher.js");
@@ -15,6 +12,7 @@ const { Exception } = require('handlebars');
 const util = require("util");
 const fsExtra = require("fs-extra");
 const copyPromise = util.promisify(fsExtra.copy);
+const I18nPlugin = require("./plugins/i18n/I18nPlugin.js");
 
 function Entrypoint (){
 
@@ -98,7 +96,9 @@ function Entrypoint (){
         var hasI18nConfig = Common.hasTheMinimalI18nConfiguration(configDataSource);
         console.debug(`hasI18nConfig: ${hasI18nConfig}`);
         
-        console.log("Folders", JSON.stringify({ projectBaseLocation, siteFolderLocation, themeLocation }))
+        console.log("Folders", JSON.stringify({ projectBaseLocation, siteFolderLocation, themeLocation }));
+
+        var i18nPlugin = new I18nPlugin();
 
         //TODO: move to another module or plugin
         if(hasI18nConfig===false){
@@ -128,38 +128,11 @@ function Entrypoint (){
                     })    
             }
         }else{
-            //thanks to earlier validation, here we have a ssr strategy with more than 1 languages
-            var renderMode = configDataSource.i18n.render_mode || "default_language";
-            //remove this when more show modes are add
-            if(renderMode!="default_language"){
-                throw new Error(`Not supported i18n.render_mode: ${i18n.render_mode}`);
-            }
-
-            var showFloatingLanguageSelector = configDataSource.i18n.show_selector || true;
-
             var publisher = new Publisher();
-            //index.html for default language
-            //default language will be the first
-            await publisher.start(themeLocation, siteFolderLocation); 
+            var builder = new Builder();
 
-            var filenames = await fs.promises.readdir(siteFolderLocation);
-            var initialHtmlFileNames = [];
-            for(var filename of filenames){
-                if (filename.endsWith(".html")) initialHtmlFileNames.push(filename);
-            }
+            await i18nPlugin.start(frameworkLocation, configDataSourceAbsoluteLocation, siteFolderLocation, themeLocation, publisher, builder);
 
-            var languages = configDataSource.i18n.languages;
-            // more languages: en.html, fr.html, etc
-            for(var i=1; i<languages.length; i++){
-                for(var initialHtmlFileName of initialHtmlFileNames){
-                  var name = path.parse(initialHtmlFileName).name;
-                  console.log(`Creating: ${name}-${languages[i]}.html`);                  
-                  await copyPromise(path.join(siteFolderLocation, initialHtmlFileName), path.join(siteFolderLocation, `${name}-${languages[i]}.html`))    
-                }    
-            }
-
-            var builder = new Builder();        
-            await builder.renderSsrMultiLanguage(frameworkLocation, configDataSource, siteFolderLocation, themeLocation, initialHtmlFileNames, showFloatingLanguageSelector);
             this.server = new Server();
             await this.server.start(port, siteFolderLocation);         
 
@@ -170,47 +143,15 @@ function Entrypoint (){
 
                 console.log("Detected change: " + filename)
                 console.log("\nRebuilding")
-                var rawConfigDataSource = await fs.promises.readFile(configDataSourceAbsoluteLocation,"utf8");
-                let configDataSource = yaml.load(rawConfigDataSource);                  
-                await publisher.start(themeLocation, siteFolderLocation);
-                await builder.renderSsrMonoLanguage(configDataSource, siteFolderLocation, themeLocation);
 
-
-                //--
-                renderMode = configDataSource.i18n.render_mode || "default_language";
-                //remove this when more show modes are add
-                if(renderMode!="default_language"){
-                    throw new Error(`Not supported i18n.render_mode: ${i18n.render_mode}`);
-                }
-    
-                showFloatingLanguageSelector = configDataSource.i18n.show_selector || true;
-    
-                await publisher.start(themeLocation, siteFolderLocation); 
-    
-                filenames = await fs.promises.readdir(siteFolderLocation);
-                let initialHtmlFileNames = [];
-                for(let filename of filenames){
-                    if (filename.endsWith(".html")) initialHtmlFileNames.push(filename);
-                }
-    
-                languages = configDataSource.i18n.languages;
-                // more languages: en.html, fr.html, etc
-                for(let i=1; i<languages.length; i++){
-                    for(let initialHtmlFileName of initialHtmlFileNames){
-                      var name = path.parse(initialHtmlFileName).name;
-                      console.log(`Creating: ${name}-${languages[i]}.html`);                  
-                      await copyPromise(path.join(siteFolderLocation, initialHtmlFileName), path.join(siteFolderLocation, `${name}-${languages[i]}.html`))    
-                    }    
-                }
-    
-                await builder.renderSsrMultiLanguage(frameworkLocation, configDataSource, siteFolderLocation, themeLocation, initialHtmlFileNames, showFloatingLanguageSelector);
+                await i18nPlugin.start(frameworkLocation, configDataSourceAbsoluteLocation, siteFolderLocation, themeLocation, publisher, builder);
             })    
 
         }
 
     };
 
-    async function folderExist(folderToValidate){
+    async function singleFile(folderToValidate){
      
     }
 

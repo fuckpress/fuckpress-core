@@ -20,6 +20,26 @@ function Builder() {
     console.log("Static render completed")
   }
 
+  this.renderSsrFolder = async (configDataSource, siteFolderAbsoluteLocation, htmlLanguageSelector) =>{
+
+    var rawResults = await fs.promises.readdir(siteFolderAbsoluteLocation);
+    for (let relativeHtmlLocation of rawResults) {
+      if (relativeHtmlLocation.endsWith(".html")) {
+        console.log("Page to render: ", path.join(siteFolderAbsoluteLocation, relativeHtmlLocation));
+        var rawTemplateString = await fs.promises.readFile(path.join(siteFolderAbsoluteLocation, relativeHtmlLocation), "utf-8");
+        var pageTemplate = Handlebars.compile(rawTemplateString);    
+        var renderedHtml = pageTemplate(configDataSource);
+
+        if(htmlLanguageSelector){
+          renderedHtml = renderedHtml.replace(/<\/body>/,htmlLanguageSelector+"\n<\/body>");
+        }
+        await fs.promises.writeFile(path.join(siteFolderAbsoluteLocation, relativeHtmlLocation), renderedHtml);
+      }
+    }
+
+    console.log("Static render completed")
+  }
+
   this.renderSsrMultiLanguage = async (frameworkLocation, configDataSource, siteFolderAbsoluteLocation, themeLocation, initialHtmlFileNames, showFloatingLanguageSelector) =>{
 
     var languages = configDataSource.i18n.languages;
@@ -87,25 +107,6 @@ function Builder() {
   async function createFloatingLanguageSelector(languages, defaultLanguage, frameworkLocation, initialHtmlFileNames){
     var rawTemplateString = await fs.promises.readFile(path.join(frameworkLocation, "src","main","resources","plugins","i18n","template.html"), "utf-8");
     var pageTemplate = Handlebars.compile(rawTemplateString); 
-    // var data = [];
-    // for(var language of languages){
-    //   if(language === defaultLanguage){
-    //     for (let initialHtmlFileName of initialHtmlFileNames) {
-    //       if(initialHtmlFileName==="index.html"){
-    //         data.push({short_name: language.toUpperCase(), url: "/"});
-    //       }else{
-    //         data.push({short_name: language.toUpperCase(), url: `/${initialHtmlFileName}`});
-    //       }
-    //     }
-    //   }else{
-    //     for (let initialHtmlFileName of initialHtmlFileNames) {
-    //       var name = path.parse(initialHtmlFileName).name;
-    //       var computedHtmlFileName = `${name}-${language}.html`;
-    //       data.push({short_name: language.toUpperCase(), url: `/${computedHtmlFileName}`});
-    //     }
-    //   }
-    // }
-    //return pageTemplate({languages: data});
 
     var languageSelectorByFile = {};
 
