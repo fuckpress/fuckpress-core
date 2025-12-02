@@ -6,10 +6,10 @@ const os = require('os');
 const { v4: uuidv4 } = require('uuid');
 const expect = chai.expect;
 const assert = chai.assert;
-const SsrHtmlRender = require(`${appDir}/src/main/node/SsrHtmlRender.js`);
+const Builder = require(`${appDir}/src/main/node/Builder.js`);
 const yaml = require('js-yaml');
 
-describe('SsrHtmlRender', function () {
+describe('Builder', function () {
 
   it('should render one page (default) with simple config', async function () {
 
@@ -27,9 +27,9 @@ describe('SsrHtmlRender', function () {
     await fs.promises.mkdir(siteFolder);
 
     //start renderdization
-    var webpageLocation = path.join(appDir, "webpage");
-    var ssrHtmlRender = new SsrHtmlRender();
-    await ssrHtmlRender.start(yamlObject, siteFolder, webpageLocation);
+    var webpageLocation = path.join(appDir, "theme");
+    var builder = new Builder();
+    await builder.renderSsrMonoLanguage(yamlObject, siteFolder, webpageLocation);
     
     //assert
     var indexHtmlContent = await fs.promises.readFile(path.join(folder, "site", "index.html"), "utf8");
