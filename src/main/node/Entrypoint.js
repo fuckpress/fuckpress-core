@@ -13,6 +13,7 @@ const util = require("util");
 const fsExtra = require("fs-extra");
 const copyPromise = util.promisify(fsExtra.copy);
 const I18nPlugin = require("./plugins/i18n/I18nPlugin.js");
+const HandlebarsSetup = require("./HandlebarsSetup.js");
 
 function Entrypoint() {
 
@@ -20,7 +21,9 @@ function Entrypoint() {
 
     this.start = async (options, projectBaseLocationToOverride) => {
 
-        console.log("Entrypoint arguments", options)
+        console.log("Entrypoint arguments", options);
+
+        HandlebarsSetup.init();
 
         var f = finder(__filename);
         var frameworkLocation = path.dirname(f.next().filename);
